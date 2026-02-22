@@ -1,0 +1,80 @@
+Name: Ayush Thakur
+Phone: +91-9906795531
+Email: ayushthakurr007@gmail.com
+GitHub: https://github.com/ayush-thakur01
+LinkedIn: https://www.linkedin.com/in/ayush-thakur/
+
+--------------------------------------------------
+
+EDUCATION
+Malnad College of Engineering
+B.E in Computer Science
+2024 – 2028
+(Currently 2nd Year, 4th Semester)
+
+--------------------------------------------------
+
+TECHNICAL SKILLS
+
+Programming Languages:
+C, Java, Python, PHP, JavaScript
+
+Frontend:
+HTML, CSS, JavaScript
+
+Backend:
+Node.js, Express.js, PHP
+
+Database:
+MySQL, MongoDB (Basics)
+
+Concepts:
+REST APIs, OOPs, Version Control
+
+Tools:
+Git, GitHub, VS Code, Figma, Linux (CLI Basics)
+
+--------------------------------------------------
+
+PROJECTS
+
+1. GitHub Profile Analyzer – Full Stack Web Application
+- Developed full-stack web application using Node.js and Express.
+- Integrated GitHub REST API to fetch repository data and language statistics.
+- Implemented dynamic dashboard with real-time data rendering.
+- Designed structured backend architecture for scalability.
+
+2. Krishi Sahyog – Farmer Support Platform
+- Built platform to assist farmers with digital guidance.
+- Implemented backend logic and database integration.
+- Designed user-focused interface for better accessibility.
+
+3. Smart Compost Bin – IoT-Based Monitoring System
+- Designed compost monitoring system using Arduino.
+- Integrated temperature sensor for environmental tracking.
+- Built system to convert leaf and mess waste into compost within 20 days.
+- Objective: Reduce mosquito breeding and produce usable organic fertilizer.
+- Contributed to system idea, sensor integration, and monitoring logic.
+
+4. AI-Based Multilingual Voice Detection System
+- Contributed to AI model for detecting multiple languages from audio input.
+- Performed preprocessing and integrated model output into backend pipeline.
+
+--------------------------------------------------
+
+CERTIFICATIONS
+
+- IBM SkillsBuild – Getting Started with Artificial Intelligence
+- Introduction to AI (Vertex Studio)
+- Attention Mechanism (AI Concept)
+- Microsoft – AI to Aspire 4 (Embedded AI Assessment – 15 Hours)
+
+--------------------------------------------------
+
+CLOUD EXPERIENCE
+
+- Worked with Google Cloud CLI and Console
+- Deployed and managed cloud-based resources
+- Practiced IAM roles and Compute Engine usage
+
+--------------------------------------------------
