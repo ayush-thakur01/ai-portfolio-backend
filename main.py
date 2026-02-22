@@ -22,7 +22,7 @@ class ChatRequest(BaseModel):
     message: str
 
 
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "xxxxx"
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
