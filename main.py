@@ -7,12 +7,10 @@ import os
 from database import engine, SessionLocal
 from models import ChatMessage, Base
 
-# Create tables
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,20 +19,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Root route (fix 404 on /)
 @app.get("/")
 def root():
     return {"message": "Ayush Portfolio AI Backend Running Successfully 🚀"}
 
-# Request model
 class ChatRequest(BaseModel):
     message: str
 
-# Load API key securely
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 if not OPENROUTER_API_KEY:
-    raise ValueError("OPENROUTER_API_KEY not set in environment variables")
+    raise ValueError("OPENROUTER_API_KEY not set")
 
 @app.post("/chat")
 def chat(request: ChatRequest):
@@ -45,19 +40,20 @@ def chat(request: ChatRequest):
         db.add(ChatMessage(role="user", content=request.message))
         db.commit()
 
-        # Call OpenRouter
         response = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             headers={
                 "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://your-render-url.onrender.com",
+                "X-Title": "Ayush Portfolio AI"
             },
             json={
-                "model": "openai/gpt-4o-mini",
+                "model": "openai/gpt-3.5-turbo",
                 "messages": [
                     {
                         "role": "system",
-                        "content": "You are an AI assistant for Ayush Thakur's portfolio website. Only answer portfolio-related questions."
+                        "content": "You are an AI assistant for Ayush's portfolio website. Only answer portfolio related questions."
                     },
                     {
                         "role": "user",
@@ -70,23 +66,28 @@ def chat(request: ChatRequest):
 
         data = response.json()
 
-        # Check API error
         if response.status_code != 200:
-            raise HTTPException(status_code=500, detail=data)
+            return {
+                "error": "API Error",
+                "status_code": response.status_code,
+                "details": data
+            }
 
         if "choices" not in data:
-            raise HTTPException(status_code=500, detail="Invalid API response format")
+            return {
+                "error": "Invalid API response format",
+                "full_response": data
+            }
 
         ai_response = data["choices"][0]["message"]["content"]
 
-        # Save AI message
         db.add(ChatMessage(role="ai", content=ai_response))
         db.commit()
 
         return {"response": ai_response}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return {"error": str(e)}
 
     finally:
         db.close()
