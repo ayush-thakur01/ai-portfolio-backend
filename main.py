@@ -1,15 +1,18 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 import requests
+import os
 
 from database import engine, SessionLocal
 from models import ChatMessage, Base
-from fastapi.middleware.cors import CORSMiddleware
 
+# Create tables
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,116 +20,95 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# Request body model
+
+# Root route (fix 404 on /)
+@app.get("/")
+def root():
+    return {"message": "Ayush Portfolio AI Backend Running Successfully 🚀"}
+
+# Request model
 class ChatRequest(BaseModel):
     message: str
 
+# Load API key securely
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-OPENROUTER_API_KEY = "xxxxx"
+if not OPENROUTER_API_KEY:
+    raise ValueError("OPENROUTER_API_KEY not set in environment variables")
 
 @app.post("/chat")
-async def chat(request: ChatRequest):
-
+def chat(request: ChatRequest):
     db = SessionLocal()
 
-    # Save user message
-    db.add(ChatMessage(role="user", content=request.message))
-    db.commit()
+    try:
+        # Save user message
+        db.add(ChatMessage(role="user", content=request.message))
+        db.commit()
 
-    # Call OpenRouter
-    response = requests.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-            "Content-Type": "application/json"
-        },
-        json={
-            "model": "openai/gpt-3.5-turbo",
-           "messages": [
-    {
-        "role": "system",
-        "content": """
-You are an AI assistant for Ayush Thakur's portfolio website.
+        # Call OpenRouter
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "openai/gpt-4o-mini",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are an AI assistant for Ayush Thakur's portfolio website. Only answer portfolio-related questions."
+                    },
+                    {
+                        "role": "user",
+                        "content": request.message
+                    }
+                ]
+            },
+            timeout=30
+        )
 
-Only answer questions related to Ayush's skills, projects, education, and technical experience.
+        data = response.json()
 
-If a question is unrelated to Ayush, politely respond:
-"I am designed to answer questions only about Ayush's portfolio and professional work."
+        # Check API error
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail=data)
 
-Here is Ayush's information:
+        if "choices" not in data:
+            raise HTTPException(status_code=500, detail="Invalid API response format")
 
-Name: Ayush Thakur
-Education: B.Tech in Computer Science
+        ai_response = data["choices"][0]["message"]["content"]
 
-Skills:
-- React
-- TypeScript
-- Python
-- FastAPI
-- SQLite
-- MySQL
-- Node.js
-- REST API Design
-- SQLAlchemy
-- Git & GitHub
+        # Save AI message
+        db.add(ChatMessage(role="ai", content=ai_response))
+        db.commit()
 
-Projects:
+        return {"response": ai_response}
 
-1) AI-Integrated Portfolio System:
-Full-stack portfolio website with AI chat assistant.
-Backend built using FastAPI, persistent chat storage with SQLite,
-OpenRouter integration for AI responses.
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-2) GitHub Profile Analyzer:
-Tool that analyzes public GitHub profiles using GitHub API.
-Evaluates repositories, languages, commit activity, and contributions.
+    finally:
+        db.close()
 
-3) Krishi Sahyog:
-Web-based agricultural support platform designed to assist farmers
-with crop guidance and digital resource management.
-
-4) Smart Composting Bin:
-IoT-based compost system integrating temperature and moisture sensors,
-rotating cutting mechanism, water spray system, and heating elements.
-Designed to accelerate biodegradable waste decomposition.
-
-Always respond professionally and clearly.
-"""
-    },
-    {
-        "role": "user",
-        "content": request.message
-    }
-],
-        }
-    )
-
-    ai_response = response.json()["choices"][0]["message"]["content"]
-
-    # Save AI message
-    db.add(ChatMessage(role="ai", content=ai_response))
-    db.commit()
-
-    db.close()
-
-    return {"response": ai_response}
+@app.get("/history")
+def get_history():
+    db = SessionLocal()
+    try:
+        messages = db.query(ChatMessage).all()
+        return [
+            {"role": msg.role, "content": msg.content}
+            for msg in messages
+        ]
+    finally:
+        db.close()
 
 @app.delete("/clear")
 def clear_history():
     db = SessionLocal()
-    db.query(ChatMessage).delete()
-    db.commit()
-    db.close()
-    return {"message": "Chat history cleared"}
-
-# NEW HISTORY ENDPOINT
-@app.get("/history")
-def get_history():
-    db = SessionLocal()
-    messages = db.query(ChatMessage).all()
-    db.close()
-
-    return [
-        {"role": msg.role, "content": msg.content}
-        for msg in messages
-    ]
+    try:
+        db.query(ChatMessage).delete()
+        db.commit()
+        return {"message": "Chat history cleared"}
+    finally:
+        db.close()
