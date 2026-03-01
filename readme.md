@@ -34,13 +34,15 @@ This service powers the AI assistant on the frontend portfolio.
 
 ## 📂 Project Structure
     ai-portfolio-backend/
+ai-portfolio-backend/
 │
-├── main.py 
-├── models.py 
-├── database.py 
-├── requirements.txt 
+├── app/
+│   ├── main.py
+│   ├── models.py
+│   └── database.py
+│
+├── requirements.txt
 └── README.md
-
 ---
 
 ## 🔑 Environment Variables
