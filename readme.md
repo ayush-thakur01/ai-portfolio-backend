@@ -35,10 +35,10 @@ This service powers the AI assistant on the frontend portfolio.
 ## 📂 Project Structure
     ai-portfolio-backend/
 │
-├── main.py # FastAPI application
-├── models.py # Database models
-├── database.py # Database configuration
-├── requirements.txt # Project dependencies
+├── main.py 
+├── models.py 
+├── database.py 
+├── requirements.txt 
 └── README.md
 
 ---
