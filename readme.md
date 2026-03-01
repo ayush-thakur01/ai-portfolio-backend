@@ -67,3 +67,97 @@ cd ai-portfolio-backend
 
 Windows:python -m venv venv
 venv\Scripts\activate
+
+### 3️⃣ Install Dependencies
+
+
+pip install -r requirements.txt
+
+
+### 4️⃣ Run Development Server
+
+
+uvicorn main:app --reload
+
+
+Server will run at:
+
+
+http://127.0.0.1:8000
+
+
+Swagger API documentation:
+
+
+http://127.0.0.1:8000/docs
+
+
+---
+
+## 📡 API Endpoints
+
+### POST `/chat`
+
+Accepts user message and returns AI response.
+
+Request Body:
+
+{
+"message": "Tell me about Ayush's projects"
+}
+
+
+---
+
+### GET `/history`
+
+Returns stored chat history.
+
+---
+
+### DELETE `/clear`
+
+Clears stored chat history.
+
+---
+
+## 🌍 Production Deployment
+
+Backend deployed on Render.
+
+Start command used:
+
+
+uvicorn main:app --host 0.0.0.0 --port 10000
+
+
+Live Backend URL:
+
+
+https://ai-portfolio-backend-tovu.onrender.com
+
+
+Note:
+Backend is hosted on Render's free tier, so initial requests may experience a cold start delay.
+
+---
+
+## 🔐 Security Considerations
+
+- API key managed using environment variables
+- No hardcoded credentials
+- CORS middleware enabled
+- Error handling for external API responses
+
+---
+
+## 🎯 Project Purpose
+
+This backend demonstrates:
+
+- REST API design
+- AI integration using external APIs
+- Database persistence
+- Secure configuration handling
+- Production deployment practices
+- Error handling for real-world API responses
