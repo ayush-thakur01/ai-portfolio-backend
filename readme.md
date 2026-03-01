@@ -32,8 +32,9 @@ This service powers the AI assistant on the frontend portfolio.
 
 ---
 
-## 📂 Project Structure
-    ai-portfolio-backend/
+## 📁 Project Structure
+
+```
 ai-portfolio-backend/
 │
 ├── app/
@@ -43,7 +44,7 @@ ai-portfolio-backend/
 │
 ├── requirements.txt
 └── README.md
----
+```
 
 ## 🔑 Environment Variables
 
