@@ -62,7 +62,7 @@ In production (Render), set the environment variable from the dashboard.
 ## 📦 Local Setup & Installation
 
 ### 1️⃣ Clone Repository
-git clone https://github.com/YOUR_USERNAME/ai-portfolio-backend.git
+git clone https://github.com/ayush-thakur01/ai-portfolio-backend.git
 
 cd ai-portfolio-backend
 
